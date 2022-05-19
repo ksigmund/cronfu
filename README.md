@@ -1,6 +1,6 @@
 # CronFu
 
-[Enter useful description for CronFu]
+An F# crontab library.
 
 ---
 
