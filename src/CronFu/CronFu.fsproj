@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
@@ -6,17 +6,18 @@
   <PropertyGroup>
     <Title>CronFu</Title>
     <Description>CronFu does the thing!</Description>
-
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)'=='Release'">
     <Optimize>true</Optimize>
     <Tailcalls>true</Tailcalls>
-    
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="AssemblyInfo.fs" />
+    <Compile Include="Time.fs" />
+    <Compile Include="Cron.fs" />
+    <Compile Include="Parsing.fs" />
+    <Compile Include="CronFu.fs" />
     <Compile Include="Library.fs" />
+    <Compile Include="AssemblyInfo.fs" />
   </ItemGroup>
   <Import Project="..\..\.paket\Paket.Restore.targets" />
 </Project>
- 
