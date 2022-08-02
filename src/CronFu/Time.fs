@@ -1,4 +1,3 @@
-[<AutoOpen>]
 module CronFu.Time
 
 open System
@@ -18,6 +17,7 @@ type Range<'a> =
         | (t1, t2) when t1 <= t2 -> Ok { from = t1; ``to`` = t2; step = step }
         | _ -> Error $"Ranges must resprsent an ascending series of values. {t2} is less than {t1}."
 
+/// Month values
 type MonthVal =
     | Jan = 1
     | Feb = 2
@@ -38,6 +38,7 @@ let (|ValidMonth|) (x: string) =
     | (true, value) -> Some((int32) value)
     | _ -> None
 
+/// Day Values
 type DayVal =
     | Sun = 0
     | Mon = 1

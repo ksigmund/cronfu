@@ -1,5 +1,7 @@
+
 [<AutoOpen>]
 module CronFu.Cron
+open Time
 
 type CronTime<'a> =
     | Wildcard
@@ -30,6 +32,12 @@ type CronExpression =
           this.Months |> toString
           this.DaysOfWeek |> toString ]
         |> String.concat " and "
+    static member create (m, h, dom, month, dow) =
+        { Minutes = m
+          Hours = h
+          DaysOfMonth = dom
+          Months = month
+          DaysOfWeek = dow }
 
 module CronExpression =
 
