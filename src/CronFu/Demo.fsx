@@ -4,4 +4,4 @@
 open System
 open CronFu
 
-Console.WriteLine (describe "5-11/2 4 1 * *")
+Console.WriteLine (describe "5-11/2 4 1 * MON-FRI")

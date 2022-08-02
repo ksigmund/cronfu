@@ -78,14 +78,18 @@ let inline pCronIntStr<'a when 'a: (static member IsValid: string -> option<int3
     int)> =
     pCronInt <|> attempt (pCronStr<'a>)
 
+
+
 /// A parser that produces a CronExpression
 let pCronExpression =
-    tuple5
-        (pCronInt .>> spaces1)
-        (pCronInt .>> spaces1)
-        (pCronInt .>> spaces1)
-        (pCronIntStr .>> spaces1)
-        (pCronIntStr .>> eof)
+    parse {
+        let! minutes = (pCronInt .>> spaces1)
+        let! hours = (pCronInt .>> spaces1)
+        let! days = (pCronInt .>> spaces1)
+        let! months = (pCronIntStr .>> spaces1)
+        let! dow = (pCronIntStr .>> eof)
+        return (minutes, hours, days, months, dow)
+    }
     |>> CronExpression.create
 
 let parse expression =

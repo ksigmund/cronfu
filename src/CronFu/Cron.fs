@@ -1,6 +1,6 @@
-
 [<AutoOpen>]
 module CronFu.Cron
+
 open Time
 
 type CronTime<'a> =
@@ -20,11 +20,11 @@ let toString (cronTimes: CronTime<'a> seq) =
     |> String.concat " and "
 
 type CronExpression =
-    { Minutes: CronTime<Minute> seq
-      Hours: CronTime<Hour> seq
-      DaysOfMonth: CronTime<DayOfMonth> seq
-      Months: CronTime<Month> seq
-      DaysOfWeek: CronTime<DayOfWeek> seq }
+    { Minutes: CronTime<Minute> list
+      Hours: CronTime<Hour> list
+      DaysOfMonth: CronTime<DayOfMonth> list
+      Months: CronTime<Month> list
+      DaysOfWeek: CronTime<DayOfWeek> list }
     member this.toString =
         [ this.Minutes |> toString
           this.Hours |> toString
@@ -32,7 +32,8 @@ type CronExpression =
           this.Months |> toString
           this.DaysOfWeek |> toString ]
         |> String.concat " and "
-    static member create (m, h, dom, month, dow) =
+
+    static member create(m, h, dom, month, dow) =
         { Minutes = m
           Hours = h
           DaysOfMonth = dom
