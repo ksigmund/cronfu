@@ -1,98 +1,90 @@
-namespace CronFu
-
 [<AutoOpen>]
-module Time =
-    open System
-    open System.ComponentModel
+module CronFu.Time
 
-    // Represents a range of values, optionally separated by a an incremental step
-    type Range<'a> =
-        private
-            { from: int
-              ``to``: int
-              step: int option }
-        member this.From = this.from
-        member this.To = this.``to``
-        member this.Step = this.step
+open System
 
-        static member tryCreate t1 t2 step =
-            match (t1, t2) with
-            | (t1, t2) when t1 <= t2 -> Ok { from = t1; ``to`` = t2; step = step }
-            | _ -> Error $"Ranges must resprsent an ascending series of values. {t2} is less than {t1}."
+// Represents a range of values, optionally separated by a an incremental step
+type Range<'a> =
+    private
+        { from: int
+          ``to``: int
+          step: int option }
+    member this.From = this.from
+    member this.To = this.``to``
+    member this.Step = this.step
 
-    type MonthVal =
-        | Jan = 1
-        | Feb = 2
-        | Mar = 3
-        | Apr = 4
-        | May = 5
-        | Jun = 6
-        | Jul = 7
-        | Aug = 8
-        | Sep = 9
-        | Oct = 10
-        | Nov = 11
-        | Dec = 12
+    static member tryCreate t1 t2 step =
+        match (t1, t2) with
+        | (t1, t2) when t1 <= t2 -> Ok { from = t1; ``to`` = t2; step = step }
+        | _ -> Error $"Ranges must resprsent an ascending series of values. {t2} is less than {t1}."
 
-    /// Active pattern that returns Some if the provided string is a valid month, otherwise None.
-    let (|ValidMonth|) (x: string) =
-        match Enum.TryParse<MonthVal>(x, true) with
-        | (true, value) -> Some((int32) value)
-        | _ -> None
+type MonthVal =
+    | Jan = 1
+    | Feb = 2
+    | Mar = 3
+    | Apr = 4
+    | May = 5
+    | Jun = 6
+    | Jul = 7
+    | Aug = 8
+    | Sep = 9
+    | Oct = 10
+    | Nov = 11
+    | Dec = 12
 
-    type DayVal =
-        | Sun = 0
-        | Mon = 1
-        | Tue = 2
-        | Wed = 3
-        | Thu = 4
-        | Fri = 5
-        | Sat = 6
+/// Active pattern that returns Some if the provided string is a valid month, otherwise None.
+let (|ValidMonth|) (x: string) =
+    match Enum.TryParse<MonthVal>(x, true) with
+    | (true, value) -> Some((int32) value)
+    | _ -> None
 
-    let (|ValidDay|) (arg: string) =
-        match Enum.TryParse<DayVal>(arg, true) with
-        | (true, value) -> Some((int32) value)
-        | _ -> None
+type DayVal =
+    | Sun = 0
+    | Mon = 1
+    | Tue = 2
+    | Wed = 3
+    | Thu = 4
+    | Fri = 5
+    | Sat = 6
 
-    [<DisplayName("Blah")>]
-    type Minute = Minute
-        with
-            static member Min = 0
-            static member Max = 59
+/// Active pattern that returns Some if the provided string is a valid day, otherwise None.
+let (|ValidDay|) (arg: string) =
+    match Enum.TryParse<DayVal>(arg, true) with
+    | (true, value) -> Some((int32) value)
+    | _ -> None
 
-    type Hour = Hour
-        with
-            static member Min = 0
-            static member Max = 23
+type Minute = Minute
+    with
+        static member Min = 0
+        static member Max = 59
 
-    type DayOfMonth = DayOfMonth
-        with
-            static member Min = 1
-            static member Max = 31
+type Hour = Hour
+    with
+        static member Min = 0
+        static member Max = 23
 
-    type Month = Month
-        with
-            static member Min = (int) MonthVal.Jan
-            static member Max = (int) MonthVal.Dec
+type DayOfMonth = DayOfMonth
+    with
+        static member Min = 1
+        static member Max = 31
 
-            static member IsValid str =
-                match str with
-                | ValidMonth (m) -> m
+type Month = Month
+    with
+        static member Min = (int) MonthVal.Jan
+        static member Max = (int) MonthVal.Dec
+        static member IsValid str = (|ValidMonth|) str
 
-    type DayOfWeek = DayOfWeek
-        with
-            static member Min = 0
-            static member Max = 6
+type DayOfWeek = DayOfWeek
+    with
+        static member Min = 0
+        static member Max = 6
+        static member IsValid str = (|ValidDay|) str
 
-            static member IsValid str =
-                match str with
-                | ValidDay (d) -> d
+let inline TimeMin<'T when 'T: (static member Min: int)> =
+    (^T: (static member Min: int) ())
 
-    let inline TimeMin<'T when 'T: (static member Min: int)> =
-        (^T: (static member Min: int) ())
+let inline TimeMax<'T when 'T: (static member Max: int)> =
+    (^T: (static member Max: int) ())
 
-    let inline TimeMax<'T when 'T: (static member Max: int)> =
-        (^T: (static member Max: int) ())
-
-    let inline IsValid<'T when 'T: (static member IsValid: string -> option<int32>)> str =
-        (^T: (static member IsValid: string -> option<int32>) (str))
+let inline IsValid<'T when 'T: (static member IsValid: string -> option<int32>)> str =
+    (^T: (static member IsValid: string -> option<int32>) (str))

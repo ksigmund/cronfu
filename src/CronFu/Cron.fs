@@ -1,30 +1,39 @@
-namespace CronFu
-
 [<AutoOpen>]
-module Cron =
+module CronFu.Cron
 
-    type CronTime<'a> =
-        | Wildcard
-        | Value of int
-        | Range of Range<'a>
+type CronTime<'a> =
+    | Wildcard
+    | Value of int
+    | Range of Range<'a>
+    override this.ToString() =
+        match this with
+        | Wildcard -> $"Every {typeof<'a>.Name}"
+        | Value value -> $"Every {typeof<'a>.Name} {value}"
+        | Range range -> $"From {typeof<'a>.Name} {range.From} to {range.To}"
 
-    type CronExpression =
-        { Minutes: CronTime<Minute> seq
-          Hours: CronTime<Hour> seq
-          DaysOfMonth: CronTime<DayOfMonth> seq
-          Months: CronTime<Month> seq
-          DaysOfWeek: CronTime<DayOfWeek> seq }
 
-    let toString (cronTimes: seq<CronTime<'a>>) =
-        cronTimes
-        |> Seq.mapi (fun i time ->
-            match time with
-            | Wildcard -> $"Every {typeof<'a>.Name}"
-            | Value value -> $"Every {typeof<'a>.Name} {value}"
-            | Range range -> $"From {typeof<'a>.Name} {range.From} to {range.To}")
+let toString (cronTimes: CronTime<'a> seq) =
+    cronTimes
+    |> Seq.map (fun x -> x.ToString())
+    |> String.concat " and "
+
+type CronExpression =
+    { Minutes: CronTime<Minute> seq
+      Hours: CronTime<Hour> seq
+      DaysOfMonth: CronTime<DayOfMonth> seq
+      Months: CronTime<Month> seq
+      DaysOfWeek: CronTime<DayOfWeek> seq }
+    member this.toString =
+        [ this.Minutes |> toString
+          this.Hours |> toString
+          this.DaysOfMonth |> toString
+          this.Months |> toString
+          this.DaysOfWeek |> toString ]
         |> String.concat " and "
 
-    let describe (result: Result<CronExpression, string>) =
+module CronExpression =
+
+    let toString (result: Result<CronExpression, string>) =
         match result with
-        | Ok cron -> cron.Minutes |> toString
+        | Ok cron -> cron.toString
         | Error err -> err
