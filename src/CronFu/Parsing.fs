@@ -22,13 +22,6 @@ let valueTime (cronValue: CronTime<'a>) _ =
     | Value v -> Reply(v)
     | _ -> Reply(Error, expectedString "Value must be an integer.")
 
-/// Creates a CronTime instance if the provided int value is between the allowed min and max values for the time type.
-let inline create<'a when 'a: (static member Min: int) and 'a: (static member Max: int)> : int
-    -> Result<CronTime<'a>, string> =
-    function
-    | x when (x >= TimeMin<'a>) && (x <= TimeMax<'a>) -> Value x |> Result.Ok
-    | _ -> Result.Error $"{typeof<'a>.Name} must be between {TimeMin<'a>}-{TimeMax<'a>}"
-
 /// Returns a parser for wildcards (i.e. the '*' character) which returns the Wildcard case when successful.
 let pWildcard<'a> : CronParser<'a> = '*' |> pchar >>% Wildcard
 
@@ -66,19 +59,19 @@ let cronParser<'a> (pCron: CronParser<'a>) =
 
 // Create a parser that returns a list of CronTimes if the provided int value and ranges are valid
 let inline pCronInt<'a when 'a: (static member Min: int) and 'a: (static member Max: int)> =
-    create |> pIntTime |> cronParser<'a>
+    CronTime.create |> pIntTime |> cronParser<'a>
 
 // Create a parser that returns a list of CronTimes if the provided string value and ranges are valid
 let inline pCronStr<'a when 'a: (static member IsValid: string -> option<int32>) and 'a: (static member Min: int) and 'a: (static member Max:
     int)> =
-    create<'a> |> (pTime pStrTime<'a>) |> cronParser
+    CronTime.create<'a>
+    |> (pTime pStrTime<'a>)
+    |> cronParser
 
 /// Creates a parser that returns a list of CronTimes, including ranges, individuals months, and wildcards for a CronTime that can either be an int or a string
 let inline pCronIntStr<'a when 'a: (static member IsValid: string -> option<int32>) and 'a: (static member Min: int) and 'a: (static member Max:
     int)> =
     pCronInt <|> attempt (pCronStr<'a>)
-
-
 
 /// A parser that produces a CronExpression
 let pCronExpression =
@@ -94,6 +87,7 @@ let pCronExpression =
 
 let parse expression =
     let result = run pCronExpression expression
+
     match result with
     | Success (res, _, _) -> Result.Ok res
     | Failure (err, _, _) -> Result.Error err

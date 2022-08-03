@@ -1,4 +1,5 @@
 [<AutoOpen>]
 module CronFu.Api
 
-let describe = parse >> CronExpression.toString
+// Compose the parse function with the describe function
+let parseAndDescribe = Parsing.parse >> Cron.describe
