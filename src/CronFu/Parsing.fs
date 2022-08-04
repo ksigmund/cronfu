@@ -17,7 +17,7 @@ let pResult f =
     | Result.Ok a -> preturn (f a)
     | Result.Error err -> fail err
 
-let valueTime (cronValue: CronTime<'a>) _ =
+let valueTime (cronValue: CronTime<_>) _ =
     match cronValue with
     | Value v -> Reply(v)
     | _ -> Reply(Error, expectedString "Value must be an integer.")
@@ -62,11 +62,8 @@ let inline pCronInt<'a when 'a: (static member Min: int) and 'a: (static member 
     CronTime.create |> pIntTime |> cronParser<'a>
 
 // Create a parser that returns a list of CronTimes if the provided string value and ranges are valid
-let inline pCronStr<'a when 'a: (static member IsValid: string -> option<int32>) and 'a: (static member Min: int) and 'a: (static member Max:
-    int)> =
-    CronTime.create<'a>
-    |> (pTime pStrTime<'a>)
-    |> cronParser
+let inline pCronStr<'a when 'a: (static member IsValid: string -> option<int32>) and 'a: (static member Min: int) and 'a: (static member Max: int)> =
+    CronTime.create<'a> |> (pTime pStrTime<'a>) |> cronParser
 
 /// Creates a parser that returns a list of CronTimes, including ranges, individuals months, and wildcards for a CronTime that can either be an int or a string
 let inline pCronIntStr<'a when 'a: (static member IsValid: string -> option<int32>) and 'a: (static member Min: int) and 'a: (static member Max:
@@ -87,7 +84,6 @@ let pCronExpression =
 
 let parse expression =
     let result = run pCronExpression expression
-
     match result with
     | Success (res, _, _) -> Result.Ok res
     | Failure (err, _, _) -> Result.Error err
