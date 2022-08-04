@@ -54,27 +54,32 @@ let (|ValidDay|) (arg: string) =
     | (true, value) -> Some((int32) value)
     | _ -> None
 
+// Minute type with a range of 0-59
 type Minute = Minute
     with
         static member Min = 0
         static member Max = 59
 
+// Hour type with a range of 0-23
 type Hour = Hour
     with
         static member Min = 0
         static member Max = 23
 
+// DayOfMonth type with a range of 1-31
 type DayOfMonth = DayOfMonth
     with
         static member Min = 1
         static member Max = 31
 
+// Month type with a range of 1-12
 type Month = Month
     with
         static member Min = (int) MonthVal.Jan
         static member Max = (int) MonthVal.Dec
         static member IsValid str = (|ValidMonth|) str
 
+// DayOfWeek type with a range of 0-6
 type DayOfWeek = DayOfWeek
     with
         static member Min = 0
