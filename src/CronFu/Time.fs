@@ -82,8 +82,8 @@ type Month = Month
 // DayOfWeek type with a range of 0-6
 type DayOfWeek = DayOfWeek
     with
-        static member Min = 0
-        static member Max = 6
+        static member Min = (int) DayVal.Sun
+        static member Max = (int) DayVal.Sat
         static member IsValid str = (|ValidDay|) str
 
 let inline TimeMin<'T when 'T: (static member Min: int)> =
